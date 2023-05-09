@@ -27,22 +27,11 @@
   failed_when: (azcmagent_lnx_install.rc not in [0, 16])
   changed_when: (azcmagent_lnx_install.rc in [0, 16])
 
-- name: Check if the Connected Machine Agent has already been downloaded on Windows servers
-  ansible.windows.win_stat:
-    path: C:\Program Files\AzureConnectedMachineAgent
-  register: azcmagent_win_downloaded
-  when: ansible_os_family == 'Windows'
-
-- name: Download the Connected Machine Agent on Windows servers
-  ansible.windows.win_get_url:
-    url: https://aka.ms/AzureConnectedMachineAgent
-    dest: '%TEMP%\AzureConnectedMachineAgent.msi'
-  when: (ansible_os_family == 'Windows') and (not azcmagent_win_downloaded.stat.exists)
-
-- name: Install the Connected Machine Agent on Windows servers
+- name: Download and install the Connected Machine Agent on Windows servers
   ansible.windows.win_package:
-    path: '%TEMP%\AzureConnectedMachineAgent.msi'
-  when: (ansible_os_family == 'Windows') and (not azcmagent_win_downloaded.stat.exists)
+    path: https://aka.ms/AzureConnectedMachineAgent
+    product_id: '{0D3CE69B-5661-4D28-8486-3979AC24C40C}'
+  when: (ansible_os_family == 'Windows')
 
 - name: Check if the Connected Machine Agent has already been connected
   become: true
