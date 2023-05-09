@@ -36,12 +36,12 @@
 - name: Download the Connected Machine Agent on Windows servers
   ansible.windows.win_get_url:
     url: https://aka.ms/AzureConnectedMachineAgent
-    dest: C:\Users\AppData\Local\Temp\AzureConnectedMachineAgent.msi
+    dest: '%TEMP%\AzureConnectedMachineAgent.msi'
   when: (ansible_os_family == 'Windows') and (not azcmagent_win_downloaded.stat.exists)
 
 - name: Install the Connected Machine Agent on Windows servers
   ansible.windows.win_package:
-    path: C:\Users\AppData\Local\Temp\AzureConnectedMachineAgent.msi
+    path: '%TEMP%\AzureConnectedMachineAgent.msi'
   when: (ansible_os_family == 'Windows') and (not azcmagent_win_downloaded.stat.exists)
 
 - name: Check if the Connected Machine Agent has already been connected
