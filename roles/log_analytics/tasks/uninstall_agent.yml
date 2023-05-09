@@ -14,4 +14,16 @@
   failed_when: uninstall_cmd.rc == 1
   changed_when: uninstall_cmd.rc != 1
 
-  # Add for Windows servers
+- name: Uninstall Agent on Windows servers
+  block:
+    - name: Get product id for the Log Analytics Agent on Windows servers
+      ansible.windows.win_shell: 'Get-WmiObject Win32_Product | Where-Object {$_.Name -contains "Microsoft Monitoring Agent"} | Select-Object -ExpandProperty IdentifyingNumber'
+      register: "{{ log_agent_product_id }}"
+
+    - name: Uninstall all old Agents on Windows servers
+      ansible.windows.win_package:
+        product_id: '{{ item }}'
+        state: absent
+      loop: "{{ log_agent_product_id.stdout_lines }}"
+      when: log_agent_product_id is defined and log_agent_product_id | length > 0
+  when: ansible_os_family == 'Windows'
